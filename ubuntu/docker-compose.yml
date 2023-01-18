@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+  vm:
+    build:
+      context: .
+      dockerfile: Dockerfile_ubuntu22.04
+      args:
+        USERNAME: your_username
+        PASSWORD: pass
+        # Find your time zone here: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        TIMEZONE: Europe/London	
+    stdin_open: true
+    hostname: ubuntu-docker
+    command: ["bash"]
+    volumes:
+      # Example for Windows
+      - "C:/Users/your_username/ubuntu_home:/home/your_username" 
+
