@@ -1,0 +1,46 @@
+FROM ubuntu:22.04
+
+ARG USERNAME
+ARG PASSWORD
+ARG TIMEZONE
+
+
+ARG GROUPNAME=ml
+ARG UID=1000
+ARG GID=1000
+
+ENV TZ=$TIMEZONE
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN \
+    apt update && \
+    apt -y upgrade
+
+RUN \
+    apt -y install build-essential && \
+    apt -y install software-properties-common && \
+    apt -y install curl git man unzip vim wget sudo
+
+RUN \ 
+    apt -y install python3-pip && \
+    pip3 install -U pip && \
+    pip3 install numpy pandas scipy matplotlib plotly && \
+    pip3 install tables && \
+    pip3 install h5py && \
+    pip3 install scikit-learn && \
+    pip3 install jupyter
+
+# PyTorch without CUDA
+RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+RUN pip3 install pytorch-lightning
+
+RUN useradd -ms /bin/bash $USERNAME
+
+RUN gpasswd -a $USERNAME sudo
+RUN echo "$USERNAME:$PASSWORD" | chpasswd
+RUN sudo sed -i 's/$USERNAME:$GROUPNAME:$UID:$GID::\/home\/$USERNAME:\/bin\/sh/$USERNAME:$GROUPNAME:$UID:$GID::\/home\/$USERNAME:\/bin\/bash/g' /etc/passwd
+
+RUN echo -e "# .bashrc\nif [ -f /etc/bash.bashrc ]; then\n . /etc/bash.bashrc\nfi" >> /home/$USERNAME/.bashrc
+
+USER $USERNAME
+WORKDIR /home/$USERNAME/

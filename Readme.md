@@ -19,8 +19,9 @@
    * `volumes`:
      * Setting for sharing the directory in the docker container to your Windows or Mac.
      * This directory will not be deleted at closing the docker container. I highly recommend you to work inside the directory you set here.
-     * '(A path on Windows or Mac):(A path on Ubuntu in the docker container)'
-     
+     * '(A path on Windows or Mac):(A path on Ubuntu in the docker container)' 
+   * (Optional) If you want to install **PyTorch** and **PyTorch Lightninig**, please put `Dockerfile_ubuntu22.04_PyTorch_cpu` on `dockerfile`.
+
 ## Step3. Build and run a docker container
  * Build a docker image
    * `$ docker compose up -d`

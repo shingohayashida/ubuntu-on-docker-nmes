@@ -8,7 +8,10 @@ services:
         USERNAME: your_username
         PASSWORD: pass
         # Find your time zone here: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-        TIMEZONE: Europe/London	
+        TIMEZONE: Europe/London
+    mem_limit: "4g"
+    mem_reservation: "512m"
+    cpus: 2
     stdin_open: true
     hostname: ubuntu-docker
     command: ["bash"]
