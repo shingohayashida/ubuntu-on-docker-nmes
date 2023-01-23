@@ -22,7 +22,7 @@ RUN \
     apt -y install curl git man unzip vim wget sudo
 
 RUN apt -y install x11-apps
-RUN apt -y install emacs vim
+RUN apt -y install emacs vim nano
 
 
 RUN \ 
