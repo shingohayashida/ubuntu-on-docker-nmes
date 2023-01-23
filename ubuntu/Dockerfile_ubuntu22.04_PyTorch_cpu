@@ -23,7 +23,7 @@ RUN \
 
 RUN apt -y install x11-apps
 RUN apt -y install emacs vim nano
-
+RUN apt -y install python3-tk
 
 RUN \ 
     apt -y install python3-pip && \
