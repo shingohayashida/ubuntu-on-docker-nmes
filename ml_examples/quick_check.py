@@ -12,4 +12,8 @@ from sklearn.svm import OneClassSVM
 from sklearn.metrics import roc_curve, roc_auc_score
 
 if __name__ == '__main__':
+    dat=np.array([[0,1,2,3,4], [0,1,2,3,4]])
+    plt.scatter(x=dat[0], y=dat[1], label='test')
+    plt.legend()
+    plt.show()
     print('All essential libraries are available!')

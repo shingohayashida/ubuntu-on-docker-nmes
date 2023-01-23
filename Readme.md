@@ -33,6 +33,7 @@
    * `$ docker cp ../ml_examples/quick_check.py ubuntu-vm-1:/home/your_username/`
  * Make sure you get **"All liberaries are available!"**.
    * `$ python3 quick_ckeck.py`
+   * You need to set the GUI. Please see [wiki](https://github.com/shingohayashida/ubuntu-on-docker-nmes/wiki).
 
 ## Step4. Stop a docker image
  * Stop the docker container.
