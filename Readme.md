@@ -1,7 +1,6 @@
 # ubuntu-on-docker-nmes
 
-## Step 1. Install Docker
-### Windows/Mac
+## Step 1. Install Docker (Windows/Mac)
  * [Download Docker Desktop](https://www.docker.com/)
  * Open `Windows PowerShell`(**Windows**) or `Terminal`(**Mac**) and try to check with [hello-world](https://hub.docker.com/_/hello-world).
    * `$ docker pull hello-world`

@@ -16,6 +16,9 @@ services:
     hostname: ubuntu-docker
     command: ["bash"]
     volumes:
-      # Example for Windows
+      # Example for Windows, "[host]:[container]"
       - "C:/Users/your_username/ubuntu_home:/home/your_username" 
-
+    ports:
+      # "[host]:[container]" 
+      # For jupyter notebook
+      - "8888:8888"

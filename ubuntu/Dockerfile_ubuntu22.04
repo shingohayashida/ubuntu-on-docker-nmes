@@ -21,6 +21,10 @@ RUN \
     apt -y install software-properties-common && \
     apt -y install curl git man unzip vim wget sudo
 
+RUN apt -y install x11-apps
+RUN apt -y install emacs vim
+
+
 RUN \ 
     apt -y install python3-pip && \
     pip3 install -U pip && \
@@ -28,8 +32,7 @@ RUN \
     pip3 install tables && \
     pip3 install h5py && \
     pip3 install scikit-learn && \
-    pip3 install jupyter
-
+    pip3 install jupyterlab
 
 
 RUN useradd -ms /bin/bash $USERNAME
@@ -39,6 +42,9 @@ RUN echo "$USERNAME:$PASSWORD" | chpasswd
 RUN sudo sed -i 's/$USERNAME:$GROUPNAME:$UID:$GID::\/home\/$USERNAME:\/bin\/sh/$USERNAME:$GROUPNAME:$UID:$GID::\/home\/$USERNAME:\/bin\/bash/g' /etc/passwd
 
 RUN echo -e "# .bashrc\nif [ -f /etc/bash.bashrc ]; then\n . /etc/bash.bashrc\nfi" >> /home/$USERNAME/.bashrc
+
+# Forwarding a display to Xserver, Display number: 0
+ENV DISPLAY host.docker.internal:0.0
 
 USER $USERNAME
 WORKDIR /home/$USERNAME/
