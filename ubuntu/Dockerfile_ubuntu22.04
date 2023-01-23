@@ -32,7 +32,8 @@ RUN \
     pip3 install tables && \
     pip3 install h5py && \
     pip3 install scikit-learn && \
-    pip3 install jupyterlab
+    pip3 install jupyterlab && \
+    pip3 install tk
 
 
 RUN useradd -ms /bin/bash $USERNAME
