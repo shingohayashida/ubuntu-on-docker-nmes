@@ -1,0 +1,75 @@
+FROM ubuntu:16.04
+
+ARG USERNAME
+ARG PASSWORD
+ARG TIMEZONE
+
+
+ARG GROUPNAME=ml
+ARG UID=1000
+ARG GID=1000
+
+ENV TZ=$TIMEZONE
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN \
+    apt update && \
+    apt -y upgrade
+
+RUN \
+    apt -y install build-essential && \
+    apt -y install software-properties-common && \
+    apt -y install curl git man unzip vim wget sudo
+
+RUN apt -y install x11-apps
+RUN apt -y install emacs vim nano
+
+RUN apt -y install cmake
+RUN apt -y install qt5-default
+RUN apt -y install libexpat1-dev
+
+RUN apt -y install python3-tk
+
+RUN apt -y install python3-pip
+RUN pip3 install -U pip==9.0.1
+RUN pip3 install numpy
+RUN pip3 install pandas
+RUN pip3 install scipy
+RUN pip3 install matplotlib
+#RUN pip3 install tables==2.4.0
+RUN pip3 install h5py
+#RUN pip3 install jupyterlab
+
+
+RUN useradd -ms /bin/bash $USERNAME
+
+RUN gpasswd -a $USERNAME sudo
+RUN echo "$USERNAME:$PASSWORD" | chpasswd
+RUN sudo sed -i 's/$USERNAME:$GROUPNAME:$UID:$GID::\/home\/$USERNAME:\/bin\/sh/$USERNAME:$GROUPNAME:$UID:$GID::\/home\/$USERNAME:\/bin\/bash/g' /etc/passwd
+
+#RUN echo -e "# .bashrc\nif [ -f /etc/bash.bashrc ]; then\n . /etc/bash.bashrc\nfi" >> /home/$USERNAME/.bashrc
+
+# Forwarding a display to Xserver, Display number: 0
+ENV DISPLAY host.docker.internal:0.0
+
+
+### Geant4-10.1.2 ###
+ENV GEANT4_ROOT /opt/geant4
+
+RUN mkdir -p $GEANT4_ROOT/geant4-v10.1.2-build $GEANT4_ROOT/geant4-v10.1.2-install
+RUN cd $GEANT4_ROOT && \
+    wget https://gitlab.cern.ch/geant4/geant4/-/archive/v10.1.2/geant4-v10.1.2.tar.gz && \
+    tar xvf geant4-v10.1.2.tar.gz && \
+    rename 's/gzipoutputstream/GZIPOutputStream/' geant4-v10.1.2/source/visualization/HepRep/src/gzipoutputstream.cc && \
+    rename 's/zipoutputstream/ZipOutputStream/' geant4-v10.1.2/source/visualization/HepRep/src/zipoutputstream.cc && \    
+    cd $GEANT4_ROOT/geant4-v10.1.2-build && \
+    cmake -DGEANT4_INSTALL_DATA=ON  -DGEANT4_USE_QT=ON -DCMAKE_INSTALL_PREFIX=../geant4-v10.1.2-install ../geant4-v10.1.2 && \
+    make -j 4 && \
+    make install
+
+ENV PATH=$PATH:$GEANT4_ROOT/geant4-v10.1.2-install/bin
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GEANT4_ROOT/geant4-v10.1.2-install/lib
+ENV CPATH=$CPATH:$GEANT4_ROOT/geant4-v10.1.2-install/include
+
+USER $USERNAME
+WORKDIR /home/$USERNAME/
