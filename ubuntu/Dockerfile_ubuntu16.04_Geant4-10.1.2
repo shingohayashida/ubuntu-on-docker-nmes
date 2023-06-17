@@ -22,6 +22,8 @@ RUN \
     apt -y install curl git man unzip vim wget sudo
 
 RUN apt -y install x11-apps
+RUN apt -y install libxpm-dev
+RUN apt -y install libxft-dev
 RUN apt -y install emacs vim nano
 
 RUN apt -y install cmake
@@ -55,7 +57,6 @@ ENV DISPLAY host.docker.internal:0.0
 
 ### Geant4-10.1.2 ###
 ENV GEANT4_ROOT /opt/geant4
-
 RUN mkdir -p $GEANT4_ROOT/geant4-v10.1.2-build $GEANT4_ROOT/geant4-v10.1.2-install
 RUN cd $GEANT4_ROOT && \
     wget https://gitlab.cern.ch/geant4/geant4/-/archive/v10.1.2/geant4-v10.1.2.tar.gz && \
@@ -67,9 +68,63 @@ RUN cd $GEANT4_ROOT && \
     make -j 4 && \
     make install
 
+### ROOT-5.34.38 ###
+ENV ROOT_DIR /opt/root
+ENV ROOT_PATH $ROOT_DIR/root-5.34.38-build
+RUN mkdir -p $ROOT_PATH
+RUN cd $ROOT_DIR && \
+    wget https://root.cern/download/root_v5.34.38.source.tar.gz && \
+    tar xvf root_v5.34.38.source.tar.gz && \
+    rename 's/root/root-5.34.38/' root && \
+    cd $ROOT_PATH && \
+    cmake ../root-5.34.38 && \
+    cmake --build .
+## To use source command ##
+RUN mv /bin/sh /bin/sh_backup && ln -s /bin/bash /bin/sh
+RUN source $ROOT_PATH/bin/thisroot.sh
+RUN rm /bin/sh && mv /bin/sh_backup /bin/sh
+
+
 ENV PATH=$PATH:$GEANT4_ROOT/geant4-v10.1.2-install/bin
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GEANT4_ROOT/geant4-v10.1.2-install/lib
 ENV CPATH=$CPATH:$GEANT4_ROOT/geant4-v10.1.2-install/include
+
+
+### WCSim (feature/add-WLS-plates) ###
+ENV WCSIM_HOME /opt/wcsim
+ENV WCSIMDIR $WCSIM_HOME/WCSim
+ENV G4WORKDIR $WCSIMDIR/exe
+ENV G4INSTALLDIR $GEANT4_ROOT/geant4-v10.1.2-build
+## To use source command ##
+RUN mv /bin/sh /bin/sh_backup && ln -s /bin/bash /bin/sh
+RUN source $GEANT4_ROOT/geant4-v10.1.2-install/bin/geant4.sh
+RUN source $GEANT4_ROOT/geant4-v10.1.2-install/share/Geant4-10.1.2/geant4make/geant4make.sh
+RUN rm /bin/sh && mv /bin/sh_backup /bin/sh
+
+
+RUN mkdir -p $WCSIM_HOME/WCSim_build/mydir
+RUN cd $WCSIM_HOME && \
+    git clone -b feature/add-WLS-plates https://github.com/federiconova/WCSim.git
+RUN cd $WCSIM_HOME/WCSim_build/mydir && \
+    cmake $WCSIMDIR && \
+    make
+RUN mkdir -p $WCSIM_HOME/WCSim_install/bin $WCSIM_HOME/WCSim_install/lib && \
+    ln -fs $WCSIM_HOME/WCSim_build/mydir/WCSim $WCSIM_HOME/WCSim_install/bin/WCSim && \
+    ln -fs $WCSIM_HOME/WCSim_build/mydir/libWCSimRoot.so $WCSIM_HOME/WCSim_install/lib/libWCSimRoot.so
+ENV PATH $PATH:$WCSIM_HOME/WCSim_install/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$WCSIM_HOME/WCSim_install/lib
+
+
+
+### Envronmental setting file ###
+RUN echo "### ROOT ###" >> /opt/bash_WCSim
+RUN echo "source $ROOT_PATH/bin/thisroot.sh" >> /opt/bash_WCSim
+RUN echo "### Geant4 ###" >> /opt/bash_WCSim
+RUN echo "source $GEANT4_ROOT/geant4-v10.1.2-install/bin/geant4.sh" >> /opt/bash_WCSim
+RUN echo "source $GEANT4_ROOT/geant4-v10.1.2-install/share/Geant4-10.1.2/geant4make/geant4make.sh" >> /opt/bash_WCSim
+RUN echo "### WCSim ###" >> bash_WCSim
+RUN echo "export $WCSim/WCSim_install/bin" >> bash_WCSim
+
 
 USER $USERNAME
 WORKDIR /home/$USERNAME/
