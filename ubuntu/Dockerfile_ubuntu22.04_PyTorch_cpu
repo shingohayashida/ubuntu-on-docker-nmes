@@ -48,7 +48,7 @@ RUN sudo sed -i 's/$USERNAME:$GROUPNAME:$UID:$GID::\/home\/$USERNAME:\/bin\/sh/$
 RUN echo -e "# .bashrc\nif [ -f /etc/bash.bashrc ]; then\n . /etc/bash.bashrc\nfi" >> /home/$USERNAME/.bashrc
 
 # Forwarding a display to Xserver, Display number: 0
-ENV DISPLAY host.docker.internal:0.0
+#ENV DISPLAY host.docker.internal:0.0
 
 USER $USERNAME
 WORKDIR /home/$USERNAME/

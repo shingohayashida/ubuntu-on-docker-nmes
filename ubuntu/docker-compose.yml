@@ -22,3 +22,6 @@ services:
       # "[host]:[container]" 
       # For jupyter notebook
       - "8888:8888"
+    environment:
+      - DISPLAY=$DISPLAY
+    network_mode: 'host'

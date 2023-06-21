@@ -51,9 +51,6 @@ RUN sudo sed -i 's/$USERNAME:$GROUPNAME:$UID:$GID::\/home\/$USERNAME:\/bin\/sh/$
 
 #RUN echo -e "# .bashrc\nif [ -f /etc/bash.bashrc ]; then\n . /etc/bash.bashrc\nfi" >> /home/$USERNAME/.bashrc
 
-# Forwarding a display to Xserver, Display number: 0
-ENV DISPLAY host.docker.internal:0.0
-
 
 ### Geant4-10.1.2 ###
 ENV GEANT4_ROOT /opt/geant4
@@ -125,6 +122,8 @@ RUN echo "source $GEANT4_ROOT/geant4-v10.1.2-install/share/Geant4-10.1.2/geant4m
 RUN echo "### WCSim ###" >> bash_WCSim
 RUN echo "export $WCSim/WCSim_install/bin" >> bash_WCSim
 
+# Forwarding a display to Xserver, Display number: 0
+#ENV DISPLAY host.docker.internal:0.0
 
 USER $USERNAME
 WORKDIR /home/$USERNAME/
